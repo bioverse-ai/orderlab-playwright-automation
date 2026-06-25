@@ -11,10 +11,21 @@ failure artifacts.
 
 Repository: <https://github.com/farizm/orderlab-playwright-automation>
 CI workflow: <https://github.com/farizm/orderlab-playwright-automation/actions/workflows/playwright.yml>
+Latest verified green run:
+<https://github.com/farizm/orderlab-playwright-automation/actions/runs/28174303354>
 
 Architecture notes: [ARCHITECTURE.md](./ARCHITECTURE.md)  
 Test strategy: [TEST_STRATEGY.md](./TEST_STRATEGY.md)  
 AI-assisted QA workflow: [AI_QA_WORKFLOW.md](./AI_QA_WORKFLOW.md)
+Debugging guide: [DEBUGGING.md](./DEBUGGING.md)
+
+## CI evidence
+
+![GitHub Actions green run](./docs/assets/github-actions-green-run.png)
+
+The latest verified run shows the full pipeline passing from a clean GitHub
+Actions environment: TypeScript typecheck, smoke tests, API tests, UI tests, and
+artifact upload.
 
 ## How to review this repo in 3 minutes
 
@@ -26,6 +37,8 @@ AI-assisted QA workflow: [AI_QA_WORKFLOW.md](./AI_QA_WORKFLOW.md)
 4. Open `tests/support/api/` to see the API client layer.
 5. Open the latest GitHub Actions run to confirm the suite runs from CI and
    publishes reports.
+6. Check the CI evidence screenshot above for a quick visual proof of the latest
+   green pipeline.
 
 ## Application under test
 
@@ -180,6 +193,10 @@ The pipeline runs on push and pull request using split jobs:
 
 Each Playwright job uploads its own HTML report and failure artifacts so
 reviewers can inspect the exact layer that failed.
+
+CI stores demo account passwords in GitHub Actions Secrets. Public demo emails,
+URLs, and the Supabase anon key remain in the workflow because they are not
+private credentials for this demo application.
 
 ## Design notes
 
