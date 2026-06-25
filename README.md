@@ -12,6 +12,8 @@ failure artifacts.
 Repository: <https://github.com/bioverse-ai/orderlab-playwright-automation>
 CI workflow: <https://github.com/bioverse-ai/orderlab-playwright-automation/actions/workflows/playwright.yml>
 
+Architecture notes: [ARCHITECTURE.md](./ARCHITECTURE.md)
+
 ## Application under test
 
 - Public app: <https://orderlab-playwright-target.lovable.app>
@@ -32,25 +34,39 @@ customer data, payment processing, or production business logic.
 
 ## Current test coverage
 
+This is a focused v0.1 portfolio suite. The goal is not maximum test count; the
+goal is stable coverage of the highest-value customer and admin flows.
+
 ### UI scenarios
 
-| Scenario | File |
-|---|---|
-| Login form renders | `tests/ui/login.spec.ts` |
-| Invalid login displays an error | `tests/ui/login.spec.ts` |
-| Customer logs in successfully | `tests/ui/login.spec.ts` |
-| Customer searches and filters products | `tests/ui/products.spec.ts` |
-| Customer adds a product to the cart | `tests/ui/cart.spec.ts` |
-| Customer completes checkout and sees confirmation | `tests/ui/checkout.spec.ts` |
-| Admin updates a created order status | `tests/ui/admin-orders.spec.ts` |
+| Area | Scenario | Risk covered | File |
+|---|---|---|---|
+| Authentication | Login form renders | Login page is reachable and testable | `tests/ui/login.spec.ts` |
+| Authentication | Invalid login displays an error | User receives clear validation feedback | `tests/ui/login.spec.ts` |
+| Authentication | Customer logs in successfully | Happy-path customer authentication works | `tests/ui/login.spec.ts` |
+| Catalog | Customer searches and filters products | Product discovery controls return expected results | `tests/ui/products.spec.ts` |
+| Cart | Customer adds a product to the cart | Cart state updates from product actions | `tests/ui/cart.spec.ts` |
+| Checkout | Customer completes checkout and sees confirmation | End-to-end order creation works from UI | `tests/ui/checkout.spec.ts` |
+| Admin | Admin updates a created order status | Admin workflow can manage real customer orders | `tests/ui/admin-orders.spec.ts` |
 
 ### API scenarios
 
-| Scenario | File |
-|---|---|
-| Read product catalog | `tests/api/products.spec.ts` |
-| Create an order | `tests/api/orders.spec.ts` |
-| Read a created order by ID | `tests/api/orders.spec.ts` |
+| Area | Scenario | Risk covered | File |
+|---|---|---|---|
+| Products API | Read product catalog | Public product endpoint returns expected seed data | `tests/api/products.spec.ts` |
+| Orders API | Create an order | Server calculates subtotal and snapshots item price | `tests/api/orders.spec.ts` |
+| Orders API | Read a created order by ID | Authenticated customer can retrieve the created order | `tests/api/orders.spec.ts` |
+
+## Coverage matrix
+
+| Feature | UI coverage | API coverage | Notes |
+|---|---|---|---|
+| Login | Positive and negative login checks | Token acquisition used by API helpers | Public demo accounts only |
+| Product catalog | Search and category filter | Product list and seed data validation | Uses stable product names as fixtures |
+| Cart | Add item and verify cart state | Not directly covered | Cart is browser-local state |
+| Checkout | Customer checkout confirmation | Order creation validates server-side pricing | Dynamic address avoids duplicate-looking data |
+| Order history | Confirmation reads order ID and status | Read created order by ID | Deeper history checks are planned |
+| Admin orders | Admin updates status and verifies persistence | Not directly covered | API admin status tests are planned |
 
 ## Project structure
 
@@ -61,6 +77,10 @@ tests/
   support/    Small shared helpers
   ui/         UI tests
 ```
+
+The suite intentionally keeps Page Objects small and screen-specific. Shared
+helpers live under `tests/support/` only when they are reused by more than one
+test area.
 
 ## Local setup
 
@@ -150,3 +170,15 @@ execution from the GitHub Actions artifact.
   flow, then call the HTTP API directly.
 - CI enables Playwright traces for the portfolio report artifact; local runs use
   lighter retry-only traces.
+
+## Known limitations and next improvements
+
+This repository is intentionally scoped as a public v0.1 portfolio proof. The
+next improvements would be:
+
+- add a dedicated test data reset or seed endpoint;
+- introduce stronger fixtures for customer/admin authenticated sessions;
+- add negative API checks for unauthorized access and invalid payloads;
+- add a public `ARCHITECTURE.md` decision log as the framework evolves;
+- expand order history assertions without making tests depend on old shared
+  data.
