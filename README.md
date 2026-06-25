@@ -13,7 +13,19 @@ Repository: <https://github.com/farizm/orderlab-playwright-automation>
 CI workflow: <https://github.com/farizm/orderlab-playwright-automation/actions/workflows/playwright.yml>
 
 Architecture notes: [ARCHITECTURE.md](./ARCHITECTURE.md)  
-Test strategy: [TEST_STRATEGY.md](./TEST_STRATEGY.md)
+Test strategy: [TEST_STRATEGY.md](./TEST_STRATEGY.md)  
+AI-assisted QA workflow: [AI_QA_WORKFLOW.md](./AI_QA_WORKFLOW.md)
+
+## How to review this repo in 3 minutes
+
+1. Start with the coverage matrix below to see which product risks are covered.
+2. Open `tests/ui/checkout.spec.ts` for a readable UI happy path + validation
+   example.
+3. Open `tests/api/orders.spec.ts` for API positive, negative, and contract
+   checks.
+4. Open `tests/support/api/` to see the API client layer.
+5. Open the latest GitHub Actions run to confirm the suite runs from CI and
+   publishes reports.
 
 ## Application under test
 
