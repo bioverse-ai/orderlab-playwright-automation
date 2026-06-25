@@ -1,6 +1,11 @@
 import { expect, test } from '@playwright/test';
 import { OrdersApi } from '../support/api/ordersApi';
-import { getAdminAccessToken, getCustomerAccessToken } from '../support/auth';
+import {
+  getAdminAccessToken,
+  getCustomerAccessToken,
+  getSecondCustomerAccessToken,
+  hasSecondCustomerCredentials,
+} from '../support/auth';
 import { expectOrderContract } from '../support/contracts';
 import {
   createClassicBurgerOrder,
@@ -58,6 +63,26 @@ test('allows an admin to read a customer order by ID @regression', async ({
 
   expectOrderContract(fetchedOrder);
   expect(fetchedOrder.id).toBe(createdOrder.id);
+});
+
+test('rejects reading another customer order by ID @regression', async ({
+  request,
+}) => {
+  test.skip(
+    !hasSecondCustomerCredentials(),
+    'SECOND_CUSTOMER_EMAIL and SECOND_CUSTOMER_PASSWORD are required for cross-user authorization coverage',
+  );
+
+  const ordersApi = new OrdersApi(request);
+  const ownerToken = await getCustomerAccessToken();
+  const otherCustomerToken = await getSecondCustomerAccessToken();
+  const createdOrder = await createClassicBurgerOrder(request, ownerToken);
+  const response = await ordersApi.getOrderById(
+    createdOrder.id,
+    otherCustomerToken,
+  );
+
+  expect(response.status()).toBe(403);
 });
 
 test('rejects creating an order without a bearer token @regression', async ({

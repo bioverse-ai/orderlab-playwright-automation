@@ -164,3 +164,21 @@ Trade-off:
 - Browser/runtime upgrades can introduce behavior changes, so the upgrade is
   verified with typecheck, API tests, smoke tests, accessibility smoke tests,
   and GitHub Actions.
+
+## 2026-06-25 — Add opt-in cross-customer authorization coverage
+
+Decision:
+
+- Add an API regression test that verifies one customer cannot read another
+  customer's order.
+- Keep the test skipped until second-customer credentials are configured.
+
+Reason:
+
+- Cross-user data access is a high-value release risk. It is better covered at
+  the API layer than through a long UI flow.
+
+Trade-off:
+
+- The test requires a second demo account. Until the app provides that account,
+  the expectation is documented and ready without making CI red.

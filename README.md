@@ -44,6 +44,7 @@ hurt the business most if they broke:
 - checkout validation must prevent incomplete orders;
 - order totals must be calculated by the server, not trusted from the browser;
 - admins must be able to see customer orders and update order status;
+- customers must not be able to read another customer's order;
 - protected APIs must reject missing, invalid, or malformed requests;
 - test data must be resettable so CI runs are predictable;
 - failures must produce enough evidence for quick triage.
@@ -136,6 +137,7 @@ risks.
 | API contracts | Validate product and order response shape | API responses keep expected fields and data types | `tests/api/*.spec.ts` |
 | Orders API | Reject order creation without auth | Protected order endpoint requires bearer token | `tests/api/orders.spec.ts` |
 | Orders API | Admin reads a customer order | Admin role has expected cross-role visibility | `tests/api/orders.spec.ts` |
+| Orders API | Reject cross-customer order reads | Customer data remains isolated between accounts | `tests/api/orders.spec.ts` |
 | Orders API | Reject unauthenticated or invalid-token order reads | Protected order reads enforce bearer authentication | `tests/api/orders.spec.ts` |
 | Orders API | Return not found for unknown order | Missing valid order IDs are handled clearly | `tests/api/orders.spec.ts` |
 | Orders API | Reject unknown product ID | Invalid order payloads do not create orders | `tests/api/orders.spec.ts` |
@@ -150,7 +152,7 @@ risks.
 | Product catalog | Search and category filter | Product list and seed data validation | Uses stable product names as fixtures |
 | Cart | Add item and verify cart state | Not directly covered | Cart is browser-local state |
 | Checkout | Customer checkout confirmation and required-field validation | Order creation validates server-side pricing and bad product IDs | Dynamic address avoids duplicate-looking data |
-| Order history | Confirmation reads order ID and status | Read created order by ID with customer/admin authorization checks | Deeper history checks are planned |
+| Order history | Confirmation reads order ID and status | Read created order by ID with customer/admin authorization checks | Cross-customer read test is opt-in until a second demo customer is configured |
 | Admin orders | Admin updates status and verifies persistence | Admin can read customer orders by ID | API admin status update tests are planned |
 | Accessibility | Login and products pages checked with axe-core | Not applicable | Transient toast notifications are excluded from page-level scans |
 
@@ -224,6 +226,8 @@ SUPABASE_URL=https://fqrhjmkqntfenmsnownl.supabase.co
 SUPABASE_ANON_KEY=public-demo-anon-key
 CUSTOMER_EMAIL=customer@example.com
 CUSTOMER_PASSWORD=CustomerDemo123!
+SECOND_CUSTOMER_EMAIL=
+SECOND_CUSTOMER_PASSWORD=
 ADMIN_EMAIL=admin@example.com
 ADMIN_PASSWORD=AdminDemo123!
 TEST_API_BASE_URL=
@@ -245,6 +249,11 @@ documented in
 [docs/TEST_DATA_RESET_CONTRACT.md](./docs/TEST_DATA_RESET_CONTRACT.md), and the
 application-side implementation notes are in
 [docs/LOVABLE_RESET_IMPLEMENTATION.md](./docs/LOVABLE_RESET_IMPLEMENTATION.md).
+
+`SECOND_CUSTOMER_EMAIL` and `SECOND_CUSTOMER_PASSWORD` are optional until a
+second demo customer is available. When configured locally and in GitHub
+Secrets, the API suite also verifies that one customer cannot read another
+customer's order.
 
 ## CI
 
@@ -295,6 +304,8 @@ private credentials for this demo application.
   require bearer authentication.
 - API order tests obtain a customer bearer token through Supabase password grant,
   then call the HTTP API directly.
+- Cross-customer authorization coverage is opt-in until a second demo customer
+  exists in the app environment.
 - CI enables Playwright traces for the report artifact; local runs use
   lighter retry-only traces.
 

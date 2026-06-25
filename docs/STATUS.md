@@ -7,16 +7,17 @@ professional SDET framework.
 
 ## Active task
 
-Rewrite README positioning around business value and release-risk reduction.
+Add cross-user order authorization coverage as an opt-in API regression test.
 
 ## Acceptance criteria
 
-- README explains what release risks the framework reduces.
-- README describes the suite as a practical QA automation deliverable for
-  customer ordering, admin, API, accessibility, and CI checks.
-- README avoids wording that sounds like a learning-only project.
-- Engineering decisions remain technically accurate and concise.
-- Run a small verification command.
+- Add optional second-customer env variables.
+- Add auth helper support for a second customer.
+- Add API regression coverage that rejects one customer reading another
+  customer's order.
+- Keep the test skipped until second-customer credentials are configured.
+- Update README, TEST_STRATEGY, and ARCHITECTURE.
+- Run typecheck and API tests.
 
 ## Latest evidence
 
@@ -139,6 +140,16 @@ Rewrite README positioning around business value and release-risk reduction.
   QA automation deliverable.
 - Removed stale README wording that described reset support and Playwright
   upgrade as future work.
+- Added optional second-customer environment variables:
+  `SECOND_CUSTOMER_EMAIL` and `SECOND_CUSTOMER_PASSWORD`.
+- Added second-customer auth helper support.
+- Added opt-in API regression test for cross-customer order read isolation.
+- README, TEST_STRATEGY, and ARCHITECTURE now document the cross-user
+  authorization coverage.
+- `npm run typecheck` passed locally on 2026-06-25.
+- `npm run test:api` passed locally on 2026-06-25 with 13 passed and 1 skipped.
+  The skipped test is the expected cross-user authorization check waiting for
+  second-customer credentials.
 
 ## Blockers
 
@@ -153,4 +164,6 @@ Rewrite README positioning around business value and release-risk reduction.
 
 ## Next task
 
-Commit and push the README business-value update.
+Create a second demo customer in the app, add credentials to local `.env` and
+GitHub Secrets, then verify the cross-user authorization test runs instead of
+skipping.

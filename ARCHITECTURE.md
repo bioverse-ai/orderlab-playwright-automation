@@ -133,9 +133,15 @@ API tests cover backend behavior more directly:
   IDs.
 - authorization checks for admin access to customer orders and invalid bearer
   tokens.
+- optional authorization checks that reject one customer reading another
+  customer's order.
 
 This split keeps the UI suite focused on critical journeys while using API tests
 for faster validation of server behavior.
+
+Cross-customer authorization coverage is treated as opt-in until a second demo
+customer exists in the target app. This keeps CI green while documenting the
+security expectation clearly.
 
 ## Accessibility checks
 
