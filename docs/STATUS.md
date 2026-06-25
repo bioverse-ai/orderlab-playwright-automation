@@ -7,13 +7,16 @@ professional SDET portfolio project.
 
 ## Active task
 
-Choose the next focused senior-level improvement after reset endpoint enablement.
+Add an interview-friendly README section that explains the project decisions.
 
 ## Acceptance criteria
 
-- Pick one next task from `docs/ROADMAP.md` or Parking Lot.
-- Prefer the highest portfolio impact with the least overengineering.
-- Define acceptance criteria before implementation.
+- README has a concise “Interview talking points” section.
+- The section explains UI/API split, POM design, auth strategy, reset endpoint,
+  CI structure, reliability trade-offs, and debugging artifacts.
+- README no longer describes reset support as future-only now that reset tests
+  are enabled.
+- A small verification command passes.
 
 ## Latest evidence
 
@@ -70,6 +73,10 @@ Choose the next focused senior-level improvement after reset endpoint enablement
   - API tests passed with reset coverage enabled.
   - UI tests passed.
   - Job summaries and Playwright artifacts were uploaded.
+- README now includes “Interview talking points” for recruiter/interviewer
+  review.
+- README reset documentation was updated to reflect that reset coverage is
+  enabled and token-protected.
 
 ## Blockers
 
@@ -79,13 +86,9 @@ Choose the next focused senior-level improvement after reset endpoint enablement
 
 - Current session: source-of-truth documentation recovery and CI reviewer
   summary completed; reset endpoint handoff, CI variable wiring, and local API
-  reset verification completed; GitHub Actions verified green.
+  reset verification completed; GitHub Actions verified green; README interview
+  talking points added.
 
 ## Next task
 
-Decide the next small senior-level improvement. Good candidates:
-
-- add a lightweight accessibility smoke check;
-- add one forbidden cross-user API test if the app can support a second
-  customer;
-- improve README with a short “interview talking points” section.
+Run a small verification command, then commit/push the README maturity update.

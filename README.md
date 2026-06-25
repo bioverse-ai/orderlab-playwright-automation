@@ -43,6 +43,29 @@ artifact upload.
 6. Check the CI evidence screenshot above for a quick visual proof of the latest
    green pipeline.
 
+## Interview talking points
+
+Use these points to explain the project quickly in an interview:
+
+- I split UI and API coverage by risk. UI tests cover the flows where browser
+  behavior matters, while API tests validate server behavior faster and more
+  directly.
+- Page Objects are small and screen-focused. I avoided a large generic
+  framework layer because the suite does not need it yet.
+- API tests authenticate through a direct auth client instead of reading browser
+  storage. This keeps API coverage independent from UI login.
+- The reset endpoint is a deliberate testability feature. It lets CI return the
+  demo app to known seeded data instead of relying on whatever previous runs
+  created.
+- CI is split into typecheck, smoke, API, and UI jobs. This makes failures
+  easier to localize and gives reviewers clearer evidence.
+- Tests run with one worker because the target is a shared public demo app with
+  public demo accounts. Reliability matters more than speed here.
+- Failure artifacts are part of the debugging story: HTML reports, screenshots,
+  traces, and GitHub job summaries make failures reviewable without guessing.
+- The project is intentionally small. I chose maintainability and interview
+  explainability over adding every possible tool.
+
 ## Application under test
 
 - Public app: <https://orderlab-playwright-target.lovable.app>
@@ -184,10 +207,17 @@ TEST_RESET_TOKEN=
 `.env` is ignored by Git. The committed `.env.example` uses only public demo
 fixtures.
 
-`TEST_API_BASE_URL` and `TEST_RESET_TOKEN` are optional until the demo app
-exposes the test-only reset endpoint documented in
-[docs/TEST_DATA_RESET_CONTRACT.md](./docs/TEST_DATA_RESET_CONTRACT.md). The
-application-side implementation steps are documented in
+`TEST_API_BASE_URL` should point to the test reset API namespace:
+
+```env
+TEST_API_BASE_URL=https://orderlab-playwright-target.lovable.app/api/public
+```
+
+`TEST_RESET_TOKEN` is a test-only secret. Keep it in local `.env` and GitHub
+Actions Secrets, not in committed files. The reset endpoint contract is
+documented in
+[docs/TEST_DATA_RESET_CONTRACT.md](./docs/TEST_DATA_RESET_CONTRACT.md), and the
+application-side implementation notes are in
 [docs/LOVABLE_RESET_IMPLEMENTATION.md](./docs/LOVABLE_RESET_IMPLEMENTATION.md).
 
 ## CI
@@ -246,8 +276,7 @@ private credentials for this demo application.
 This repository is intentionally scoped as a public v0.1 portfolio proof. The
 next improvements would be:
 
-- implement the test data reset endpoint in the demo app and enable the opt-in
-  reset tests in CI;
+- keep monitoring reset-based runs for stability as more tests use seeded data;
 - expand negative API checks for forbidden cross-user access;
 - add a public `ARCHITECTURE.md` decision log as the framework evolves;
 - expand order history assertions without making tests depend on old shared
