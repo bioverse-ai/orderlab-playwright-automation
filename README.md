@@ -74,12 +74,13 @@ goal is stable coverage of the highest-value customer and admin flows.
 | Orders API | Reject order creation without auth | Protected order endpoint requires bearer token | `tests/api/orders.spec.ts` |
 | Orders API | Return not found for unknown order | Missing valid order IDs are handled clearly | `tests/api/orders.spec.ts` |
 | Orders API | Reject unknown product ID | Invalid order payloads do not create orders | `tests/api/orders.spec.ts` |
+| Orders API | Reject empty items and zero quantity | Malformed order payloads are rejected | `tests/api/orders.spec.ts` |
 
 ## Coverage matrix
 
 | Feature | UI coverage | API coverage | Notes |
 |---|---|---|---|
-| Login | Positive and negative login checks | Token acquisition used by API helpers | Public demo accounts only |
+| Login | Positive and negative login checks | API auth client obtains customer bearer token | Public demo accounts only |
 | Product catalog | Search and category filter | Product list and seed data validation | Uses stable product names as fixtures |
 | Cart | Add item and verify cart state | Not directly covered | Cart is browser-local state |
 | Checkout | Customer checkout confirmation and required-field validation | Order creation validates server-side pricing and bad product IDs | Dynamic address avoids duplicate-looking data |
@@ -93,7 +94,7 @@ tests/
   api/        API tests for public OrderLab endpoints
   fixtures.ts Authenticated customer/admin page fixtures
   pages/      Page Objects for UI screens
-  support/    Environment, auth, API clients, contracts, and test data helpers
+  support/    Environment, auth, API clients, contracts, factories, and test data helpers
   ui/         UI tests
 ```
 
@@ -151,6 +152,8 @@ copy `.env.example` to `.env`.
 ```env
 BASE_URL=https://orderlab-playwright-target.lovable.app
 API_BASE_URL=https://orderlab-playwright-target.lovable.app/api/public
+SUPABASE_URL=https://fqrhjmkqntfenmsnownl.supabase.co
+SUPABASE_ANON_KEY=public-demo-anon-key
 CUSTOMER_EMAIL=customer@example.com
 CUSTOMER_PASSWORD=CustomerDemo123!
 ADMIN_EMAIL=admin@example.com
@@ -168,33 +171,33 @@ GitHub Actions workflow:
 .github/workflows/playwright.yml
 ```
 
-The pipeline runs on push and pull request:
+The pipeline runs on push and pull request using split jobs:
 
-1. Check out the repository.
-2. Install Node.js 20.
-3. Run `npm ci`.
-4. Install Playwright Chromium.
-5. Run `npm run typecheck`.
-6. Run `npm test`.
-7. Upload `playwright-report/` and `test-results/` artifacts.
+1. `typecheck` — TypeScript validation.
+2. `smoke` — tagged smoke tests.
+3. `api` — API tests and contract checks.
+4. `ui` — browser UI tests.
 
-CI keeps Playwright traces in the HTML report so reviewers can inspect test
-execution from the GitHub Actions artifact.
+Each Playwright job uploads its own HTML report and failure artifacts so
+reviewers can inspect the exact layer that failed.
 
 ## Design notes
 
 - Page Objects are small and screen-focused.
 - Customer/admin fixtures remove duplicated login setup from UI tests.
+- API auth client obtains bearer tokens without depending on UI login or browser
+  storage.
 - API clients keep request details out of scenario-level API specs.
 - API contract helpers validate response shape and important data types.
-- API data helpers prepare common scenario data such as a Classic Burger order.
+- Test data factories prepare common scenario data such as order payloads and
+  checkout details.
 - Locators prefer roles, labels, and stable `data-testid` attributes.
 - Tests avoid fixed sleeps and use Playwright web-first assertions.
 - Each order-related test creates its own order data.
 - Public API routes are under `/api/public/*`, but protected order routes still
   require bearer authentication.
-- API order tests obtain a customer bearer token through the public demo login
-  flow, then call the HTTP API directly.
+- API order tests obtain a customer bearer token through Supabase password grant,
+  then call the HTTP API directly.
 - CI enables Playwright traces for the portfolio report artifact; local runs use
   lighter retry-only traces.
 
@@ -203,8 +206,8 @@ execution from the GitHub Actions artifact.
 This repository is intentionally scoped as a public v0.1 portfolio proof. The
 next improvements would be:
 
-- add a dedicated test data reset or seed endpoint;
-- expand negative API checks for malformed payloads and forbidden access;
+- add a dedicated test data reset or cleanup endpoint;
+- expand negative API checks for forbidden cross-user access;
 - add a public `ARCHITECTURE.md` decision log as the framework evolves;
 - expand order history assertions without making tests depend on old shared
   data.

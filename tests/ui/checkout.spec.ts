@@ -3,11 +3,10 @@ import { CheckoutPage } from '../pages/CheckoutPage';
 import { OrdersPage } from '../pages/OrdersPage';
 import { ProductsPage } from '../pages/ProductsPage';
 import {
-  checkoutCustomers,
   orderStatuses,
   products,
-  uniqueAddress,
 } from '../support/testData';
+import { createCheckoutDetails } from '../support/testDataFactory';
 
 test('completes checkout and shows order confirmation @smoke', async ({
   customerPage,
@@ -19,10 +18,9 @@ test('completes checkout and shows order confirmation @smoke', async ({
   await productsPage.addProductToCart(products.classicBurger.name);
 
   await checkoutPage.open();
-  await checkoutPage.submitOrder(
-    checkoutCustomers.portfolioCustomer.name,
-    uniqueAddress(checkoutCustomers.portfolioCustomer.addressPrefix),
-  );
+  const checkoutDetails = createCheckoutDetails('portfolioCustomer');
+
+  await checkoutPage.submitOrder(checkoutDetails.name, checkoutDetails.address);
 
   await expect(customerPage).toHaveURL(/\/orders(\?.*)?$/);
   await expect(ordersPage.orderNumber).toBeVisible();

@@ -28,7 +28,7 @@ tests/
   api/        API-level tests for public HTTP endpoints
   fixtures.ts Reusable authenticated customer/admin page fixtures
   pages/      Page Objects for user-facing screens
-  support/    Shared helpers for environment, auth, API clients, contracts, and test data
+  support/    Shared helpers for environment, auth, API clients, contracts, factories, and test data
   ui/         Browser-based UI tests
 ```
 
@@ -99,12 +99,14 @@ Current approach:
 - checkout tests use dynamic delivery addresses with timestamps;
 - API order tests create an order before reading it back;
 - API order setup is shared through `tests/support/orders.ts`;
+- order payloads and checkout details are created through
+  `tests/support/testDataFactory.ts`;
 - admin status tests create a real customer order before changing its status.
 
 Planned improvement:
 
-- add a dedicated reset/seed mechanism so every test run can start from a known
-  clean state.
+- add a dedicated reset/seed/cleanup mechanism so every test run can start from
+  a known clean state and remove created data when needed.
 
 ## UI and API split
 
@@ -140,6 +142,14 @@ creating a Classic Burger order, stay in `tests/support/orders.ts`.
 
 This keeps the framework readable without turning it into a large custom
 abstraction layer.
+
+## API authentication
+
+API tests use a small `AuthApi` client to obtain a customer bearer token through
+the public demo Supabase password grant. This keeps API tests independent from
+UI login and avoids reading browser storage.
+
+The UI login flow is still tested separately in `tests/ui/login.spec.ts`.
 
 ## API contract checks
 

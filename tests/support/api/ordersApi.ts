@@ -27,7 +27,7 @@ export class OrdersApi {
   constructor(private readonly request: APIRequestContext) {}
 
   async createOrder(
-    items: CreateOrderItem[],
+    items: readonly CreateOrderItem[],
     token?: string,
   ): Promise<APIResponse> {
     return this.request.post(`${this.apiBaseUrl}/orders`, {

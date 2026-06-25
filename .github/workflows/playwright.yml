@@ -4,18 +4,41 @@ on:
   push:
   pull_request:
 
+env:
+  BASE_URL: https://orderlab-playwright-target.lovable.app
+  API_BASE_URL: https://orderlab-playwright-target.lovable.app/api/public
+  SUPABASE_URL: https://fqrhjmkqntfenmsnownl.supabase.co
+  SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxcmhqbWtxbnRmZW5tc25vd25sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE5OTE5ODMsImV4cCI6MjA5NzU2Nzk4M30.OduzxbhJeLGGT01CkIxCr4vO3UgH2nDRf2MrQGsj54c
+  CUSTOMER_EMAIL: customer@example.com
+  CUSTOMER_PASSWORD: CustomerDemo123!
+  ADMIN_EMAIL: admin@example.com
+  ADMIN_PASSWORD: AdminDemo123!
+
 jobs:
-  test:
-    name: Typecheck and Playwright tests
+  typecheck:
+    name: TypeScript typecheck
     runs-on: ubuntu-latest
 
-    env:
-      BASE_URL: https://orderlab-playwright-target.lovable.app
-      API_BASE_URL: https://orderlab-playwright-target.lovable.app/api/public
-      CUSTOMER_EMAIL: customer@example.com
-      CUSTOMER_PASSWORD: CustomerDemo123!
-      ADMIN_EMAIL: admin@example.com
-      ADMIN_PASSWORD: AdminDemo123!
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+  smoke:
+    name: Smoke tests
+    runs-on: ubuntu-latest
+    needs: typecheck
 
     steps:
       - name: Checkout repository
@@ -33,17 +56,14 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Run Playwright tests
-        run: npm test
+      - name: Run smoke tests
+        run: npm run test:smoke
 
       - name: Upload Playwright HTML report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: smoke-playwright-report
           path: playwright-report/
           if-no-files-found: ignore
           retention-days: 14
@@ -52,7 +72,91 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
+          name: smoke-test-results
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  api:
+    name: API tests
+    runs-on: ubuntu-latest
+    needs: typecheck
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run API tests
+        run: npm run test:api
+
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-playwright-report
+          path: playwright-report/
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Upload Playwright failure artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-test-results
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  ui:
+    name: UI tests
+    runs-on: ubuntu-latest
+    needs: typecheck
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run UI tests
+        run: npm run test:ui
+
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-playwright-report
+          path: playwright-report/
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Upload Playwright failure artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-test-results
           path: test-results/
           if-no-files-found: ignore
           retention-days: 14

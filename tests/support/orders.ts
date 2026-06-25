@@ -5,6 +5,7 @@ import {
   OrdersApi,
 } from './api/ordersApi';
 import { type Product, ProductsApi } from './api/productsApi';
+import { createClassicBurgerOrderItems } from './testDataFactory';
 import { products } from './testData';
 
 export type { OrderItem, OrderResponse, Product };
@@ -34,12 +35,7 @@ export async function createClassicBurgerOrder(
   const ordersApi = new OrdersApi(request);
   const classicBurger = await getClassicBurger(request);
   const response = await ordersApi.createOrder(
-    [
-      {
-        product_id: classicBurger.id,
-        quantity: 2,
-      },
-    ],
+    createClassicBurgerOrderItems(classicBurger.id),
     token,
   );
 

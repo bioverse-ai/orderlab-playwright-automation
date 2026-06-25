@@ -36,7 +36,3 @@ export const checkoutCustomers = {
     addressPrefix: '456 Admin Test Street',
   },
 } as const;
-
-export function uniqueAddress(addressPrefix: string): string {
-  return `${addressPrefix} ${Date.now()}`;
-}

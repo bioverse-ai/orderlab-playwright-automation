@@ -56,11 +56,15 @@ API tests cover backend behavior directly and faster than the UI:
 - order creation;
 - reading an order by ID;
 - product and order response contract checks;
-- auth and invalid-data negative cases.
+- auth, malformed payload, and invalid-data negative cases.
 
 API tests are useful because they check server behavior without depending on
 the browser UI. Small API client classes hide request URLs, headers, and payload
 details so the spec files stay focused on behavior.
+
+API authentication is handled by a small auth client that uses the public demo
+Supabase password grant. API tests do not depend on browser login state or
+localStorage.
 
 ## Test data approach
 
@@ -71,9 +75,12 @@ Test data is simple and predictable:
 - order tests create fresh orders during the run;
 - dynamic addresses use timestamps so repeated runs are easy to distinguish;
 - shared constants live in `tests/support/testData.ts`.
+- factories in `tests/support/testDataFactory.ts` create reusable order payloads
+  and checkout details.
 
-The next improvement would be a reset/seed endpoint so every test run starts
-from a fully known state.
+Cleanup strategy for v0.1 is isolation-based: tests create unique data and do
+not depend on old orders. The next application-level improvement would be a
+reset/cleanup endpoint so every test run starts from a fully known state.
 
 ## Locator strategy
 
@@ -92,13 +99,13 @@ Avoid:
 
 ## CI and reporting
 
-Every push and pull request runs:
+Every push and pull request runs split CI jobs:
 
-1. dependency install;
-2. Playwright Chromium install;
-3. TypeScript typecheck;
-4. full Playwright suite;
-5. HTML report and failure artifact upload.
+1. TypeScript typecheck;
+2. smoke tests;
+3. API tests;
+4. UI tests;
+5. HTML report and failure artifact upload per Playwright job.
 
 This gives reviewers proof that the project works from a clean checkout.
 

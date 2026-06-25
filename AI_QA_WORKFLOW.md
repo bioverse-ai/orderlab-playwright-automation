@@ -40,6 +40,7 @@ order confirmation.
 | Empty checkout fields show validation errors | UI | Verifies user-facing validation |
 | API creates an order with expected subtotal | API | Verifies server-side pricing |
 | API rejects unknown product ID | API | Verifies invalid payload handling |
+| API rejects empty items and zero quantity | API | Verifies malformed payload handling |
 | Order response matches expected contract | API | Verifies important response shape |
 
 ### Automation choices
@@ -48,14 +49,18 @@ order confirmation.
 - API tests cover backend behavior faster and more directly.
 - Page Objects keep UI actions readable.
 - API clients keep HTTP details out of scenario-level tests.
+- API auth client obtains bearer tokens without browser storage.
 - Shared test data keeps seeded demo values in one place.
+- Test data factories keep order payloads and checkout data reusable.
 
 ### Implemented evidence
 
 - `tests/ui/checkout.spec.ts`
 - `tests/api/orders.spec.ts`
 - `tests/support/api/ordersApi.ts`
+- `tests/support/api/authApi.ts`
 - `tests/support/contracts.ts`
+- `tests/support/testDataFactory.ts`
 - GitHub Actions HTML report artifact
 
 ## Example: admin order status
@@ -120,7 +125,7 @@ Human review is still required for:
 
 | Improvement | Why it matters |
 |---|---|
-| API auth without browser storage | Makes API tests more independent from UI login |
 | Test data reset/seed endpoint | Makes every run start from a known state |
-| More malformed payload API checks | Improves negative coverage |
+| Cleanup endpoint for created orders | Allows destructive cleanup instead of isolation-only cleanup |
+| Forbidden cross-user API checks | Improves authorization risk coverage |
 | Accessibility smoke checks | Adds user-centered quality signal |

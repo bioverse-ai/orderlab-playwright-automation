@@ -8,13 +8,11 @@ import {
   type OrderResponse,
   unitPrice,
 } from '../support/orders';
+import { createOrderItem, invalidOrderPayloads } from '../support/testDataFactory';
 import { invalidIds, products } from '../support/testData';
 
-test('creates an order through the API @smoke', async ({
-  browser,
-  request,
-}) => {
-  const token = await getCustomerAccessToken(browser);
+test('creates an order through the API @smoke', async ({ request }) => {
+  const token = await getCustomerAccessToken();
   const order = await createClassicBurgerOrder(request, token);
 
   expectOrderContract(order);
@@ -26,12 +24,9 @@ test('creates an order through the API @smoke', async ({
   expect(unitPrice(order.items[0])).toBe(products.classicBurger.price);
 });
 
-test('reads a created order by ID through the API @smoke', async ({
-  browser,
-  request,
-}) => {
+test('reads a created order by ID through the API @smoke', async ({ request }) => {
   const ordersApi = new OrdersApi(request);
-  const token = await getCustomerAccessToken(browser);
+  const token = await getCustomerAccessToken();
   const createdOrder = await createClassicBurgerOrder(request, token);
   const response = await ordersApi.getOrderById(createdOrder.id, token);
 
@@ -54,21 +49,17 @@ test('rejects creating an order without a bearer token @regression', async ({
   const ordersApi = new OrdersApi(request);
   const classicBurger = await getClassicBurger(request);
   const response = await ordersApi.createOrder([
-    {
-      product_id: classicBurger.id,
-      quantity: 1,
-    },
+    createOrderItem(classicBurger.id),
   ]);
 
   expect(response.status()).toBe(401);
 });
 
 test('returns not found for an unknown order ID @regression', async ({
-  browser,
   request,
 }) => {
   const ordersApi = new OrdersApi(request);
-  const token = await getCustomerAccessToken(browser);
+  const token = await getCustomerAccessToken();
   const response = await ordersApi.getOrderById(
     invalidIds.unknownOrderId,
     token,
@@ -78,11 +69,10 @@ test('returns not found for an unknown order ID @regression', async ({
 });
 
 test('rejects creating an order with an unknown product ID @regression', async ({
-  browser,
   request,
 }) => {
   const ordersApi = new OrdersApi(request);
-  const token = await getCustomerAccessToken(browser);
+  const token = await getCustomerAccessToken();
   const response = await ordersApi.createOrder(
     [
       {
@@ -94,4 +84,31 @@ test('rejects creating an order with an unknown product ID @regression', async (
   );
 
   expect([400, 404]).toContain(response.status());
+});
+
+test('rejects creating an order with an empty items array @regression', async ({
+  request,
+}) => {
+  const ordersApi = new OrdersApi(request);
+  const token = await getCustomerAccessToken();
+  const response = await ordersApi.createOrder(
+    invalidOrderPayloads.emptyItems,
+    token,
+  );
+
+  expect(response.status()).toBe(400);
+});
+
+test('rejects creating an order with zero quantity @regression', async ({
+  request,
+}) => {
+  const ordersApi = new OrdersApi(request);
+  const token = await getCustomerAccessToken();
+  const classicBurger = await getClassicBurger(request);
+  const response = await ordersApi.createOrder(
+    invalidOrderPayloads.zeroQuantity(classicBurger.id),
+    token,
+  );
+
+  expect(response.status()).toBe(400);
 });
