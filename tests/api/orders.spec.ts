@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { OrdersApi } from '../support/api/ordersApi';
 import { getCustomerAccessToken } from '../support/auth';
+import { expectOrderContract } from '../support/contracts';
 import {
   createClassicBurgerOrder,
   getClassicBurger,
@@ -16,6 +17,7 @@ test('creates an order through the API @smoke', async ({
   const token = await getCustomerAccessToken(browser);
   const order = await createClassicBurgerOrder(request, token);
 
+  expectOrderContract(order);
   expect(order.id).toBeTruthy();
   expect(order.status).toMatch(/pending/i);
   expect(order.subtotal).toBe(25.98);
@@ -37,6 +39,7 @@ test('reads a created order by ID through the API @smoke', async ({
 
   const fetchedOrder = (await response.json()) as OrderResponse;
 
+  expectOrderContract(fetchedOrder);
   expect(fetchedOrder.id).toBe(createdOrder.id);
   expect(fetchedOrder.status).toMatch(/pending/i);
   expect(fetchedOrder.subtotal).toBe(25.98);

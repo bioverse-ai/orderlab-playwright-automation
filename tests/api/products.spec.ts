@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { ProductsApi } from '../support/api/productsApi';
+import { expectProductsResponseContract } from '../support/contracts';
 import { products } from '../support/testData';
 
 test('reads the public product catalog @smoke', async ({ request }) => {
@@ -11,6 +12,7 @@ test('reads the public product catalog @smoke', async ({ request }) => {
 
   const body = await productsApi.parseProductsResponse(response);
 
+  expectProductsResponseContract(body);
   expect(body.products).toHaveLength(6);
 
   const classicBurger = body.products.find(

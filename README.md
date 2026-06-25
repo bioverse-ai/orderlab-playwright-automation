@@ -58,6 +58,7 @@ goal is stable coverage of the highest-value customer and admin flows.
 | Products API | Read product catalog | Public product endpoint returns expected seed data | `tests/api/products.spec.ts` |
 | Orders API | Create an order | Server calculates subtotal and snapshots item price | `tests/api/orders.spec.ts` |
 | Orders API | Read a created order by ID | Authenticated customer can retrieve the created order | `tests/api/orders.spec.ts` |
+| API contracts | Validate product and order response shape | API responses keep expected fields and data types | `tests/api/*.spec.ts` |
 | Orders API | Reject order creation without auth | Protected order endpoint requires bearer token | `tests/api/orders.spec.ts` |
 | Orders API | Return not found for unknown order | Missing valid order IDs are handled clearly | `tests/api/orders.spec.ts` |
 | Orders API | Reject unknown product ID | Invalid order payloads do not create orders | `tests/api/orders.spec.ts` |
@@ -80,7 +81,7 @@ tests/
   api/        API tests for public OrderLab endpoints
   fixtures.ts Authenticated customer/admin page fixtures
   pages/      Page Objects for UI screens
-  support/    Environment, auth, API clients, and test data helpers
+  support/    Environment, auth, API clients, contracts, and test data helpers
   ui/         UI tests
 ```
 
@@ -173,6 +174,7 @@ execution from the GitHub Actions artifact.
 - Page Objects are small and screen-focused.
 - Customer/admin fixtures remove duplicated login setup from UI tests.
 - API clients keep request details out of scenario-level API specs.
+- API contract helpers validate response shape and important data types.
 - API data helpers prepare common scenario data such as a Classic Burger order.
 - Locators prefer roles, labels, and stable `data-testid` attributes.
 - Tests avoid fixed sleeps and use Playwright web-first assertions.

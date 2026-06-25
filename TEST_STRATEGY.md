@@ -55,6 +55,7 @@ API tests cover backend behavior directly and faster than the UI:
 - product catalog response;
 - order creation;
 - reading an order by ID;
+- product and order response contract checks;
 - auth and invalid-data negative cases.
 
 API tests are useful because they check server behavior without depending on

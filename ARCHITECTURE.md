@@ -28,7 +28,7 @@ tests/
   api/        API-level tests for public HTTP endpoints
   fixtures.ts Reusable authenticated customer/admin page fixtures
   pages/      Page Objects for user-facing screens
-  support/    Shared helpers for environment, auth, API clients, and test data
+  support/    Shared helpers for environment, auth, API clients, contracts, and test data
   ui/         Browser-based UI tests
 ```
 
@@ -140,6 +140,15 @@ creating a Classic Burger order, stay in `tests/support/orders.ts`.
 
 This keeps the framework readable without turning it into a large custom
 abstraction layer.
+
+## API contract checks
+
+The API tests include lightweight contract assertions for product and order
+responses. These checks verify important fields, data types, arrays, and numeric
+values without adding a schema-validation dependency.
+
+This gives the suite a practical contract-testing signal while keeping the
+project small enough to explain clearly.
 
 ## CI and reporting
 
