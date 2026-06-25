@@ -1,0 +1,37 @@
+import { defineConfig, devices } from '@playwright/test';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const baseURL =
+  process.env.BASE_URL ?? 'https://orderlab-playwright-target.lovable.app';
+
+export default defineConfig({
+  testDir: './tests',
+  outputDir: 'test-results',
+  fullyParallel: true,
+  forbidOnly: Boolean(process.env.CI),
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  timeout: 30_000,
+  expect: {
+    timeout: 7_000,
+  },
+  reporter: [
+    ['list'],
+    ['html', { outputFolder: 'playwright-report', open: 'never' }],
+  ],
+  use: {
+    baseURL,
+    testIdAttribute: 'data-testid',
+    trace: process.env.CI ? 'on' : 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'off',
+  },
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+  ],
+});
