@@ -12,7 +12,7 @@ The suite focuses on the main user journeys:
 - customer login;
 - product search and filtering;
 - cart behavior;
-- checkout and order confirmation;
+- checkout validation and order confirmation;
 - admin order status management;
 - product and order API behavior;
 - important negative cases such as invalid login, missing auth, unknown orders,
@@ -38,7 +38,7 @@ Those can be added later if they support a clear testing goal.
 ### UI tests
 
 UI tests cover flows where browser behavior matters: login, catalog search,
-cart, checkout, and admin order updates.
+cart, checkout validation, checkout submission, and admin order updates.
 
 UI tests use:
 

@@ -48,6 +48,7 @@ goal is stable coverage of the highest-value customer and admin flows.
 | Catalog | Customer searches and filters products | Product discovery controls return expected results | `tests/ui/products.spec.ts` |
 | Cart | Customer adds a product to the cart | Cart state updates from product actions | `tests/ui/cart.spec.ts` |
 | Checkout | Customer completes checkout and sees confirmation | End-to-end order creation works from UI | `tests/ui/checkout.spec.ts` |
+| Checkout | Empty checkout fields show validation errors | Required customer details are enforced before order creation | `tests/ui/checkout.spec.ts` |
 | Admin | Admin updates a created order status | Admin workflow can manage real customer orders | `tests/ui/admin-orders.spec.ts` |
 
 ### API scenarios
@@ -68,7 +69,7 @@ goal is stable coverage of the highest-value customer and admin flows.
 | Login | Positive and negative login checks | Token acquisition used by API helpers | Public demo accounts only |
 | Product catalog | Search and category filter | Product list and seed data validation | Uses stable product names as fixtures |
 | Cart | Add item and verify cart state | Not directly covered | Cart is browser-local state |
-| Checkout | Customer checkout confirmation | Order creation validates server-side pricing and bad product IDs | Dynamic address avoids duplicate-looking data |
+| Checkout | Customer checkout confirmation and required-field validation | Order creation validates server-side pricing and bad product IDs | Dynamic address avoids duplicate-looking data |
 | Order history | Confirmation reads order ID and status | Read created order by ID | Deeper history checks are planned |
 | Admin orders | Admin updates status and verifies persistence | Not directly covered | API admin status tests are planned |
 

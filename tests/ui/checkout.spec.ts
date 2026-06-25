@@ -28,3 +28,19 @@ test('completes checkout and shows order confirmation @smoke', async ({
   await expect(ordersPage.orderNumber).toBeVisible();
   await expect(ordersPage.orderStatus).toContainText(orderStatuses.pending);
 });
+
+test('shows validation errors for empty checkout fields @regression', async ({
+  customerPage,
+}) => {
+  const productsPage = new ProductsPage(customerPage);
+  const checkoutPage = new CheckoutPage(customerPage);
+
+  await productsPage.addProductToCart(products.classicBurger.name);
+
+  await checkoutPage.open();
+  await checkoutPage.submitEmptyForm();
+
+  await expect(customerPage).toHaveURL(/\/checkout$/);
+  await expect(checkoutPage.customerNameError).toBeVisible();
+  await expect(checkoutPage.deliveryAddressError).toBeVisible();
+});

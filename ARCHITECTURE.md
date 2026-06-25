@@ -113,7 +113,7 @@ UI tests cover the browser flows that a real user would perform:
 - login;
 - product search and filtering;
 - cart behavior;
-- checkout;
+- checkout validation and submission;
 - admin order status update.
 
 API tests cover backend behavior more directly:
